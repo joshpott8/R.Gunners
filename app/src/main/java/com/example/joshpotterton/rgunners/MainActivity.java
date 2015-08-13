@@ -1,5 +1,6 @@
 package com.example.joshpotterton.rgunners;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -26,7 +27,15 @@ public class MainActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, str, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                try {
+                    Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+                    intent.putExtra("JSON", response);
+                    startActivity(intent);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
