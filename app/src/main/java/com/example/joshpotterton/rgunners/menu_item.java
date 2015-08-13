@@ -65,7 +65,7 @@ public class menu_item extends Fragment {
         mRecyclerView.hasFixedSize();
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MyAdapter(data);
+        mAdapter = new MyAdapter(data, getActivity());
         mRecyclerView.setAdapter(mAdapter);
     }
 }

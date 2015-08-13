@@ -1,6 +1,9 @@
 package com.example.joshpotterton.rgunners;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,7 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,13 +33,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private String title;
     private JSONArray jsonArray;
+    private Activity activity;
+    private ImageView imageView;
 
     //public MyAdapter(String title){
         //this.title = title;
     //}
 
-    public MyAdapter(JSONArray jsonObject){
+    public MyAdapter(JSONArray jsonObject, Activity activity){
         this.jsonArray = jsonObject;
+        this.activity = activity;
     }
 
     @Override
@@ -50,7 +63,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             Log.v("App Debug", title);
             holder.title.setText(this.title);
 
-            
+            String url = data.getString("thumbnail");
+            Log.v("App Debug", url);
+            imageView = holder.thumb;
+            if(!url.equalsIgnoreCase("self")){
+                RequestQueue queue = Volley.newRequestQueue(activity);
+
+                ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        imageView.setImageBitmap(response);
+                    }
+                }, 0, 0, null, new Response.ErrorListener(){
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("App Debug", "Image not Loaded");
+                    }
+                });
+                queue.add(imageRequest);
+
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -67,10 +100,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         implements View.OnClickListener{
 
         private TextView title;
+        private ImageView thumb;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
+            thumb = (ImageView) itemView.findViewById(R.id.thumbnail);
         }
 
         @Override
@@ -79,5 +114,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         }
     }
+
 
 }
