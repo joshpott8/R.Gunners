@@ -45,18 +45,18 @@ public class MainMenu extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //final ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        final ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 
-        //PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        //mPager.setAdapter(mPagerAdapter);
-        //mPager.setCurrentItem(0);
+        PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.setCurrentItem(0);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rView);
-        mRecyclerView.hasFixedSize();
-        mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MyAdapter(children);
-        mRecyclerView.setAdapter(mAdapter);
+        //mRecyclerView = (RecyclerView) findViewById(R.id.rView);
+        //mRecyclerView.hasFixedSize();
+        //mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        //mRecyclerView.setLayoutManager(mLayoutManager);
+        //mAdapter = new MyAdapter(children);
+        //mRecyclerView.setAdapter(mAdapter);
 
     }
 
@@ -71,8 +71,8 @@ public class MainMenu extends AppCompatActivity {
             Log.v("App Debug", Integer.toString(position));
             menu_item frag = null;
             try {
-                frag = menu_item.create(children.getJSONObject(position));
-            } catch (JSONException e) {
+                frag = menu_item.create(children, position);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return frag;

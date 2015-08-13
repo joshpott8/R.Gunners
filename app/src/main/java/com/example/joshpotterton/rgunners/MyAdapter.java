@@ -49,6 +49,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             title = data.getString("title");
             Log.v("App Debug", title);
             holder.title.setText(this.title);
+
+            
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -57,7 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return 10;
+        return 25;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder

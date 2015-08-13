@@ -21,7 +21,7 @@
         </activity>
 
         <activity android:name=".MainMenu"
-            android:label="R.Gunners: Hot">
+            android:label="/r/Gunners">
 
         </activity>
     </application>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,18 +20,24 @@ public class menu_item extends Fragment {
 
     private static String title;
     private View view;
+    private static JSONArray data;
+
+    private TextView menuName;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MyAdapter mAdapter;
+    private static int position;
 
 
-    public static menu_item create(JSONObject jsonObject){
+    public static menu_item create(JSONArray jsonArray, int pos){
         menu_item frag = new menu_item();
         try {
-            JSONObject data = jsonObject.getJSONObject("data");
-            title = data.getString("title");
-        } catch (JSONException e) {
+            data = jsonArray;
+            position = pos;
+            //data = jsonObject.getJSONObject("data");
+            //title = data.getString("title");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return frag;
@@ -39,19 +46,26 @@ public class menu_item extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (View) inflater.inflate(R.layout.menu_item, container, false);
-
+        menuName = (TextView) view.findViewById(R.id.menuName);
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.v("App Debug", title);
+        //Log.v("App Debug", title);
+
+        switch(position){
+            case 0:
+            menuName.setText("Hot");
+
+        }
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rView);
         mRecyclerView.hasFixedSize();
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        //mAdapter = new MyAdapter(title);
+        mAdapter = new MyAdapter(data);
         mRecyclerView.setAdapter(mAdapter);
     }
 }
