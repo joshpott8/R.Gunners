@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
-                    Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainMenu.class);
                     intent.putExtra("JSON", response);
                     startActivity(intent);

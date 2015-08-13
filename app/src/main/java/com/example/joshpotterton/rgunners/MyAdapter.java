@@ -35,6 +35,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private JSONArray jsonArray;
     private Activity activity;
     private ImageView imageView;
+    private int looper;
+
+    private Bitmap[] thumbnails = new Bitmap[25];
 
     //public MyAdapter(String title){
         //this.title = title;
@@ -50,6 +53,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item_layout, parent,
                 false);
         ViewHolder vh = new ViewHolder(view);
+
+
+
         return vh;
     }
 
@@ -59,30 +65,41 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         try {
             JSONObject jsonObject = jsonArray.optJSONObject(position);
             JSONObject data = jsonObject.getJSONObject("data");
+
             title = data.getString("title");
             Log.v("App Debug", title);
             holder.title.setText(this.title);
 
             String url = data.getString("thumbnail");
             Log.v("App Debug", url);
+
             imageView = holder.thumb;
-            if(!url.equalsIgnoreCase("self")){
-                RequestQueue queue = Volley.newRequestQueue(activity);
 
-                ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap response) {
-                        imageView.setImageBitmap(response);
+            try{
+
+                    if(!url.equalsIgnoreCase("self") && !url.equalsIgnoreCase("default")){
+                        RequestQueue queue = Volley.newRequestQueue(activity);
+
+                        ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
+
+                            @Override
+                            public void onResponse(Bitmap response) {
+                                imageView.setImageBitmap(response);
+                            }
+                        }, 0, 0, null, new Response.ErrorListener(){
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.v("App Debug", "Image not Loaded");
+                            }
+                        });
+                        queue.add(imageRequest);
+
                     }
-                }, 0, 0, null, new Response.ErrorListener(){
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.v("App Debug", "Image not Loaded");
-                    }
-                });
-                queue.add(imageRequest);
-
+            }
+            catch(Exception e){
+                e.printStackTrace();
             }
 
         } catch (JSONException e) {
