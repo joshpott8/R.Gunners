@@ -15,6 +15,10 @@ import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity {
 
+    private int requests = 2;
+    private String hotJSON = "";
+    private String newJSON = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,16 +26,34 @@ public class MainActivity extends AppCompatActivity {
 
         // Get JSON Data from Reddit.com/r/Gunners
         RequestQueue queue = Volley.newRequestQueue(this);
-        String str = "http://reddit.com/r/gunners/hot.json";
+        String str = "https://reddit.com/r/gunners/hot.json";
+        String str2 = "https://reddit.com/r/gunners/new.json";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, str, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     //Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), MainMenu.class);
-                    intent.putExtra("JSON", response);
-                    startActivity(intent);
+                    hotJSON = response;
+                    requests = requests -1;
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        StringRequest stringRequest2 = new StringRequest(Request.Method.GET, str2, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    newJSON = response;
+                    requests = requests -1;
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -45,6 +67,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
         queue.add(stringRequest);
+        queue.add(stringRequest2);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) if (requests == 0) {
+                    Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+                    intent.putExtra("hotJSON", hotJSON);
+                    intent.putExtra("newJSON", newJSON);
+                    startActivity(intent);
+                    break;
+                }
+            }
+        });
+
+        thread.start();
 
     }
 

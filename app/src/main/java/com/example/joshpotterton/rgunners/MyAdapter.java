@@ -61,7 +61,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(MyAdapter.ViewHolder holder, int position) {
-        menu_item frag = new menu_item();
+        //menu_item frag = new menu_item();
+
         try {
             JSONObject jsonObject = jsonArray.optJSONObject(position);
             JSONObject data = jsonObject.getJSONObject("data");
@@ -127,7 +128,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-
+            
 
         }
     }

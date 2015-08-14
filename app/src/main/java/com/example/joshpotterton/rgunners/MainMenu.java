@@ -21,7 +21,8 @@ import org.json.JSONObject;
 
 public class MainMenu extends AppCompatActivity {
 
-    private JSONArray children;
+    private JSONArray childrenH;
+    private JSONArray childrenN;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MyAdapter mAdapter;
@@ -34,13 +35,18 @@ public class MainMenu extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String json = intent.getStringExtra("JSON");
+        String hotJSON = intent.getStringExtra("hotJSON");
+        String newJSON = intent.getStringExtra("newJSON");
 
         try {
-            JSONObject reader = new JSONObject(json);
-            JSONObject d = reader.optJSONObject("data");
-            children = d.getJSONArray("children");
-            Log.v("App Debug", children.toString());
+            JSONObject readerH = new JSONObject(hotJSON);
+            JSONObject dH = readerH.optJSONObject("data");
+            childrenH = dH.getJSONArray("children");
+            Log.v("App Debug", childrenH.toString());
+
+            JSONObject readerN = new JSONObject(newJSON);
+            JSONObject dN = readerN.optJSONObject("data");
+            childrenN = dN.getJSONArray("children");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,18 +75,24 @@ public class MainMenu extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Log.v("App Debug", Integer.toString(position));
-            menu_item frag = null;
             try {
-                frag = menu_item.create(children, position);
+                switch(position) {
+                    case 0:
+                        menu_item frag = menu_item.create(childrenH, position);
+                        return frag;
+                    case 1:
+                        newFeedMenu frag2 = newFeedMenu.create(childrenN, position);
+                        return frag2;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return frag;
+            return null;
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
 
 

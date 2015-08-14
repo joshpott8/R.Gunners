@@ -16,7 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class menu_item extends Fragment {
+public class newFeedMenu extends Fragment {
 
     private static String title;
     private View view;
@@ -30,8 +30,8 @@ public class menu_item extends Fragment {
     private static int position;
 
 
-    public static menu_item create(JSONArray jsonArray, int pos){
-        menu_item frag = new menu_item();
+    public static newFeedMenu create(JSONArray jsonArray, int pos){
+        newFeedMenu frag = new newFeedMenu();
         try {
             data = jsonArray;
             position = pos;
@@ -55,7 +55,7 @@ public class menu_item extends Fragment {
         super.onActivityCreated(savedInstanceState);
         //Log.v("App Debug", title);
 
-        menuName.setText("Hot");
+        menuName.setText("New");
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rView);
         mRecyclerView.hasFixedSize();
@@ -65,3 +65,4 @@ public class menu_item extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
     }
 }
+
