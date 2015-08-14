@@ -17,13 +17,27 @@
             android:padding="5dp"
             android:id="@+id/post_title"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="Posted by:"
-            android:textSize="10dp"
-            android:id="@+id/user"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Posted by: User"
+                android:textSize="10dp"
+                android:id="@+id/user"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flair"
+                android:textSize="10dp"
+                android:background="#CCCCCC"
+                android:textColor="#222222"
+                android:id="@+id/userFlair"/>
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"

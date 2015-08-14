@@ -15,15 +15,18 @@ public class selfPost extends AppCompatActivity {
         TextView titleTextView = (TextView) findViewById(R.id.post_title);
         TextView contentTextView = (TextView) findViewById(R.id.post_content);
         TextView userTextView = (TextView) findViewById(R.id.user);
+        TextView userFlairTextView = (TextView) findViewById(R.id.userFlair);
 
         if(getIntent().hasExtra("title") && getIntent().hasExtra("content")
-                && getIntent().hasExtra("user")){
+                && getIntent().hasExtra("user") && getIntent().hasExtra("userFlair")){
             String title = getIntent().getStringExtra("title");
             String content = getIntent().getStringExtra("content");
             String user = getIntent().getStringExtra("user");
+            String userFlair = getIntent().getStringExtra("userFlair");
             titleTextView.setText(title);
             contentTextView.setText(content);
             userTextView.setText("Posted by: " + user);
+            userFlairTextView.setText(userFlair);
         }
 
     }

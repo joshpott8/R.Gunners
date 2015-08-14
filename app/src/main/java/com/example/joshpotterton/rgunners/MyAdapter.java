@@ -73,6 +73,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             Log.v("App Debug", title);
             holder.title.setText(this.title);
 
+            //Get upvotes and downvotes on each item
+            String upvotesNum = Integer.toString(data.getInt("ups"));
+            String downvotesNum = Integer.toString(data.getInt("downs"));
+
+            holder.upvote.setText(upvotesNum);
+            holder.downvote.setText(downvotesNum);
+
             String url = data.getString("thumbnail");
             Log.v("App Debug", url);
 
@@ -121,6 +128,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private TextView title;
         private ImageView thumb;
+        private TextView upvote;
+        private TextView downvote;
         private JSONArray array;
         private Activity activity;
         private Context context;
@@ -129,6 +138,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             thumb = (ImageView) itemView.findViewById(R.id.thumbnail);
+            upvote = (TextView) itemView.findViewById(R.id.upvote);
+            downvote = (TextView) itemView.findViewById(R.id.downvote);
             array = jsonArray;
             activity = act;
             context = itemView.getContext();
@@ -149,9 +160,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     String title = data.getString("title");
                     String content = data.getString("selftext");
                     String user = data.getString("author");
+                    String userFlair = data.getString("author_flair_text");
                     intent.putExtra("title", title);
                     intent.putExtra("content", content);
                     intent.putExtra("user", user);
+                    intent.putExtra("userFlair", userFlair);
                     context.startActivity(intent);
                 }
                 else{

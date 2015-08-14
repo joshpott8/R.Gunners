@@ -1,29 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dp">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/thumbnail"
-        android:src="@drawable/ab_stacked_solid_gunnersactionbar"/>
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="5dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:background="@drawable/self_post_shape">
 
-        android:padding="3dp">
-
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
-            android:textColor="#888888"
-            android:id="@+id/title"/>
+            android:id="@+id/thumbnail"
+            android:src="@drawable/ab_stacked_solid_gunnersactionbar"
+            android:padding="5dp"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp">
 
+            <TextView
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:text="23"
+                android:textSize="10dp"
+                android:gravity="center"
+                android:background="#FF9900"
+                android:id="@+id/upvote"/>
+            <TextView
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:text="2"
+                android:gravity="center"
+                android:textSize="10dp"
+                android:background="#0099FF"
+                android:id="@+id/downvote"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:padding="3dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textColor="#888888"
+                android:id="@+id/title"/>
+
+        </LinearLayout>
+</LinearLayout>
 </LinearLayout>
