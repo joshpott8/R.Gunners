@@ -39,6 +39,28 @@
                 android:id="@+id/userFlair"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:text="23"
+                android:textSize="10dp"
+                android:gravity="center"
+                android:background="#FF9900"
+                android:id="@+id/selfUps"/>
+
+            <TextView
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="10dp"
+                android:gravity="center"
+                android:background="#0099FF"
+                android:id="@+id/selfDowns"/>
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

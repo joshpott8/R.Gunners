@@ -21,7 +21,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/thumbnail"
-            android:src="@drawable/ab_stacked_solid_gunnersactionbar"
             android:padding="5dp"/>
 
         <LinearLayout

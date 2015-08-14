@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -30,16 +32,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ResourceBundle;
+
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private String title;
     private JSONArray jsonArray;
+    private JSONObject data;
     private Activity activity;
     private ImageView imageView;
     private int looper;
+    private LruCache<String, Bitmap> memoryCache;
 
-    private Bitmap[] thumbnails = new Bitmap[25];
 
     //public MyAdapter(String title){
         //this.title = title;
@@ -48,6 +53,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter(JSONArray jsonObject, Activity activity){
         this.jsonArray = jsonObject;
         this.activity = activity;
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() /1024);
+        int cacheSize = maxMemory /8;
+
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap){
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     @Override
@@ -67,7 +81,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         try {
             JSONObject jsonObject = jsonArray.optJSONObject(position);
-            JSONObject data = jsonObject.getJSONObject("data");
+            data = jsonObject.getJSONObject("data");
 
             title = data.getString("title");
             Log.v("App Debug", title);
@@ -82,52 +96,94 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             //Get Author name and flair
             String user = data.getString("author");
-            String flair = data.getString("author_flair_text");
+            String flair = data.getString("author_flair_text").trim();
 
             holder.userTextView.setText("Posted by: " + user);
             if(!flair.equalsIgnoreCase("null")) {
+                holder.flairTextView.setVisibility(View.VISIBLE);
                 holder.flairTextView.setText(flair);
             }
             else{
+                holder.flairTextView.setText("");
                 holder.flairTextView.setVisibility(View.INVISIBLE);
             }
 
+            String id = data.getString("id");
+            Bitmap bitmap = getBitmapFromMemCache(id);
             String url = data.getString("thumbnail");
             Log.v("App Debug", url);
+            //if(bitmap != null){
+                //holder.thumb.setImageBitmap(bitmap);
+            //}
+            if(url.equalsIgnoreCase("self") || url.equalsIgnoreCase("default")) {
+                holder.thumb.setImageResource(R.drawable.ab_stacked_solid_gunnersactionbar);
+            }
+            else{
 
-            imageView = holder.thumb;
+                imageView = holder.thumb;
 
-            try{
+                //try {
+                        //RequestQueue queue = Volley.newRequestQueue(activity);
 
-                    if(!url.equalsIgnoreCase("self") && !url.equalsIgnoreCase("default")){
-                        RequestQueue queue = Volley.newRequestQueue(activity);
+                        //ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
 
-                        ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
+                            //@Override
+                            //public void onResponse(Bitmap response) {
+                                //imageView.setImageBitmap(response);
+                                //try {
+                                    //addBitmapToMemoryCache(data.getString("id"), response);
+                                //} catch (Exception e) {
+                                    //e.printStackTrace();
+                                //}
+                            //}
+                        //}, 0, 0, null, new Response.ErrorListener() {
 
-                            @Override
-                            public void onResponse(Bitmap response) {
-                                imageView.setImageBitmap(response);
-                            }
-                        }, 0, 0, null, new Response.ErrorListener(){
+                            //@Override
+                            //public void onErrorResponse(VolleyError error) {
+                                //Log.v("App Debug", "Image not Loaded");
+                            //}
+                        //});
+                        //queue.add(imageRequest);
 
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.v("App Debug", "Image not Loaded");
-                            }
-                        });
-                        queue.add(imageRequest);
+                //} catch (Exception e) {
+                    //e.printStackTrace();
+                //}
 
+                RequestQueue queue = Volley.newRequestQueue(activity);
+
+                ImageLoader imageLoader = new ImageLoader(queue, new ImageLoader.ImageCache(){
+                    private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(25);
+
+                    @Override
+                    public Bitmap getBitmap(String url){
+                        return cache.get(url);
                     }
 
-            }
-            catch(Exception e){
-                e.printStackTrace();
+                    @Override
+                    public void putBitmap(String url, Bitmap bitmap1){
+                        cache.put(url, bitmap1);
+                    }
+                });
+
+                imageLoader.get(url, ImageLoader.getImageListener(holder.thumb, R.drawable.ab_stacked_solid_gunnersactionbar, R.drawable.ab_stacked_solid_gunnersactionbar));
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+    }
+
+
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return memoryCache.get(key);
     }
 
     @Override
@@ -177,10 +233,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     String content = data.getString("selftext");
                     String user = data.getString("author");
                     String userFlair = data.getString("author_flair_text");
+                    int ups = data.getInt("ups");
+                    int downs = data.getInt("downs");
                     intent.putExtra("title", title);
                     intent.putExtra("content", content);
                     intent.putExtra("user", user);
                     intent.putExtra("userFlair", userFlair);
+                    intent.putExtra("ups", ups);
+                    intent.putExtra("downs", downs);
                     context.startActivity(intent);
                 }
                 else{
