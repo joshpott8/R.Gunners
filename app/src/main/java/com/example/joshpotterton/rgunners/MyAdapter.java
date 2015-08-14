@@ -2,7 +2,9 @@ package com.example.joshpotterton.rgunners;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -52,7 +54,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item_layout, parent,
                 false);
-        ViewHolder vh = new ViewHolder(view);
+        ViewHolder vh = new ViewHolder(view, jsonArray, activity);
 
 
 
@@ -119,16 +121,48 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private TextView title;
         private ImageView thumb;
+        private JSONArray array;
+        private Activity activity;
+        private Context context;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, JSONArray jsonArray, Activity act) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             thumb = (ImageView) itemView.findViewById(R.id.thumbnail);
+            array = jsonArray;
+            activity = act;
+            context = itemView.getContext();
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            
+            int pos = getLayoutPosition();
+            try {
+                JSONObject object = array.optJSONObject(pos);
+                JSONObject data = object.optJSONObject("data");
+
+                //Log.v("App Debug", object.getString("thumbail") + " Post");
+                if(data.getBoolean("is_self")){
+                    Log.v("App Debug", "Item Clicked");
+                    Intent intent = new Intent(context, selfPost.class);
+                    String title = data.getString("title");
+                    String content = data.getString("selftext");
+                    String user = data.getString("author");
+                    intent.putExtra("title", title);
+                    intent.putExtra("content", content);
+                    intent.putExtra("user", user);
+                    context.startActivity(intent);
+                }
+                else{
+                    Uri uri = Uri.parse(data.getString("url"));
+                    Intent broswerIntent = new Intent(Intent.ACTION_VIEW, uri);
+                    context.startActivity(broswerIntent);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
         }
     }

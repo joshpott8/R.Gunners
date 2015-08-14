@@ -24,6 +24,10 @@
             android:label="/r/Gunners">
 
         </activity>
+        <activity android:name=".selfPost"
+            android:label="Self Post">
+
+        </activity>
     </application>
 
 </manifest>
