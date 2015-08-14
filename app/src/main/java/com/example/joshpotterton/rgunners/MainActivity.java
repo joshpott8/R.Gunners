@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("hotJSON", hotJSON);
                     intent.putExtra("newJSON", newJSON);
                     startActivity(intent);
+                    finish();
                     break;
                 }
             }
