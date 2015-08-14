@@ -3,6 +3,7 @@ package com.example.joshpotterton.rgunners;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 public class selfPost extends AppCompatActivity {
@@ -26,7 +27,9 @@ public class selfPost extends AppCompatActivity {
             titleTextView.setText(title);
             contentTextView.setText(content);
             userTextView.setText("Posted by: " + user);
+
             userFlairTextView.setText(userFlair);
+
         }
 
     }

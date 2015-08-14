@@ -80,6 +80,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.upvote.setText(upvotesNum);
             holder.downvote.setText(downvotesNum);
 
+            //Get Author name and flair
+            String user = data.getString("author");
+            String flair = data.getString("author_flair_text");
+
+            holder.userTextView.setText("Posted by: " + user);
+            if(!flair.equalsIgnoreCase("null")) {
+                holder.flairTextView.setText(flair);
+            }
+            else{
+                holder.flairTextView.setVisibility(View.INVISIBLE);
+            }
+
             String url = data.getString("thumbnail");
             Log.v("App Debug", url);
 
@@ -130,6 +142,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private ImageView thumb;
         private TextView upvote;
         private TextView downvote;
+        private TextView userTextView;
+        private TextView flairTextView;
         private JSONArray array;
         private Activity activity;
         private Context context;
@@ -140,6 +154,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             thumb = (ImageView) itemView.findViewById(R.id.thumbnail);
             upvote = (TextView) itemView.findViewById(R.id.upvote);
             downvote = (TextView) itemView.findViewById(R.id.downvote);
+            userTextView = (TextView) itemView.findViewById(R.id.userMenu);
+            flairTextView = (TextView) itemView.findViewById(R.id.flairMenu);
             array = jsonArray;
             activity = act;
             context = itemView.getContext();
