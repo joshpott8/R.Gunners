@@ -276,11 +276,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                                         String title = data.getString("title");
                                         String user = data.getString("author");
                                         String userFlair = data.getString("author_flair_text");
-                                        String postURL = data.getString("url");
+                                        String postURL = "https://www.reddit.com" + data.getString("permalink");
                                         int ups = data.getInt("ups");
                                         int downs = data.getInt("downs");
                                         intent.putExtra("title", title);
-                                        intent.putExtra("content", "");
+                                        intent.putExtra("content", " ");
                                         intent.putExtra("user", user);
                                         intent.putExtra("userFlair", userFlair);
                                         intent.putExtra("ups", ups);
