@@ -233,6 +233,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     String content = data.getString("selftext");
                     String user = data.getString("author");
                     String userFlair = data.getString("author_flair_text");
+                    String postURL = data.getString("url");
                     int ups = data.getInt("ups");
                     int downs = data.getInt("downs");
                     intent.putExtra("title", title);
@@ -241,6 +242,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     intent.putExtra("userFlair", userFlair);
                     intent.putExtra("ups", ups);
                     intent.putExtra("downs", downs);
+                    intent.putExtra("url", postURL);
                     context.startActivity(intent);
                 }
                 else{
