@@ -1,13 +1,16 @@
 package com.example.joshpotterton.rgunners;
 
 
+import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +31,7 @@ public class selfPost extends AppCompatActivity {
     private String postURL;
     private LinearLayout commentsArea;
     private JSONArray children;
+    private float scale;
 
     Thread thread = new Thread(new Runnable() {
         @Override
@@ -52,32 +56,148 @@ public class selfPost extends AppCompatActivity {
                                 JSONObject commentData = comment.optJSONObject("data");
                                 String str = null;
 
+                                //Comment
                                 str = commentData.getString("body_html");
+                                LinearLayout commentLayout = new LinearLayout(getApplicationContext());
                                 TextView textView = new TextView(getApplicationContext());
-                                textView.setText(Html.fromHtml(Html.fromHtml(str).toString()));
+                                textView.setText(Html.fromHtml(Html.fromHtml(str).toString()).toString().trim());
                                 textView.setTextColor(Color.BLACK);
-                                textView.setPadding(0, 15, 0, 5);
+                                textView.setPadding(0, 0, 0, 0);
+                                commentLayout.setOrientation(LinearLayout.VERTICAL);
+
+                                //Author
+                                String author = commentData.getString("author");
+                                TextView authorTV = new TextView(getApplicationContext());
+                                authorTV.setTextColor(Color.DKGRAY);
+                                authorTV.setText("Posted by: " + author);
+                                authorTV.setTextSize(8);
+                                LinearLayout postDetails = new LinearLayout(getApplicationContext());
+                                postDetails.setOrientation(LinearLayout.HORIZONTAL);
+                                postDetails.addView(authorTV);
+                                String flair = commentData.optString("author_flair_text");
+                                if(!flair.equalsIgnoreCase("null")) {
+                                    TextView flairTextView = new TextView(getApplicationContext());
+                                    flairTextView.setText(flair);
+                                    flairTextView.setTextColor(Color.BLACK);
+                                    flairTextView.setBackgroundColor(Color.LTGRAY);
+                                    flairTextView.setTextSize(8);
+                                    postDetails.addView(flairTextView);
+                                }
+
+                                String up = Integer.toString(commentData.optInt("ups"));
+                                String down = Integer.toString(commentData.optInt("downs"));
+                                TextView upTextView = new TextView(getApplicationContext());
+                                TextView downTextView = new TextView(getApplicationContext());
+                                LinearLayout scoreLayout = new LinearLayout(getApplicationContext());
+                                scoreLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                upTextView.setText(up);
+                                downTextView.setText(down);
+                                upTextView.setTextSize(8);
+                                downTextView.setTextSize(8);
+                                upTextView.setTextColor(Color.DKGRAY);
+                                downTextView.setTextColor(Color.DKGRAY);
+                                upTextView.setGravity(Gravity.CENTER);
+                                downTextView.setGravity(Gravity.CENTER);
+                                upTextView.setBackgroundColor(Color.parseColor("#FF9900"));
+                                downTextView.setBackgroundColor(Color.parseColor("#0099FF"));
+                                int width = (int) (20 * scale + 0.5f);
+                                upTextView.setWidth(width);
+                                downTextView.setWidth(width);
+                                scoreLayout.addView(upTextView);
+                                scoreLayout.addView(downTextView);
+
+                                //Divider
+                                View view = new View(getApplicationContext());
+                                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 3);
+                                view.setLayoutParams(layoutParams);
+                                view.setBackgroundColor(Color.RED);
+                                view.setPadding(0, 0, 0, 10);
+
+                                commentLayout.addView(textView);
+                                commentLayout.addView(scoreLayout);
+                                commentLayout.addView(postDetails);
+                                commentLayout.addView(view);
 
                                 LinearLayout layout = new LinearLayout(getApplicationContext());
-                                layout.setPadding(0,5,0,5);
+                                layout.setPadding(0, 5, 0, 10);
                                 layout.setOrientation(LinearLayout.VERTICAL);
-                                layout.addView(textView);
+                                layout.addView(commentLayout);
 
                                 JSONObject replies = commentData.getJSONObject("replies");
                                 JSONObject repliesData = replies.optJSONObject("data");
                                 JSONArray repliesChildren = repliesData.optJSONArray("children");
                                 int NoReplies = repliesChildren.length();
 
+                                //Add first set of replies
                                 for(int y = 0; y < NoReplies; y++){
                                     JSONObject ob1 = repliesChildren.optJSONObject(y);
                                     JSONObject obData = ob1.optJSONObject("data");
                                     String str1 = obData.getString("body_html");
                                     TextView textView1 = new TextView(getApplicationContext());
-                                    textView1.setText(Html.fromHtml(Html.fromHtml(str1).toString()));
+                                    textView1.setText(Html.fromHtml(Html.fromHtml(str1).toString()).toString().trim());
                                     textView1.setTextColor(Color.BLACK);
-                                    textView1.setPadding(25, 5, 0, 5);
-                                    textView1.setBackgroundResource(R.drawable.comments_thread_background);
-                                    layout.addView(textView1);
+                                    textView1.setPadding(0,0,0,0);
+
+                                    String author1 = obData.getString("author");
+                                    TextView authorTV1 = new TextView(getApplicationContext());
+                                    authorTV1.setTextColor(Color.DKGRAY);
+                                    authorTV1.setText("Posted by: " + author1);
+                                    authorTV1.setTextSize(8);
+
+                                    LinearLayout postDetails1 = new LinearLayout(getApplicationContext());
+                                    postDetails1.setOrientation(LinearLayout.HORIZONTAL);
+                                    postDetails1.addView(authorTV1);
+
+                                    String flair1 = obData.getString("author_flair_text");
+                                    if(!flair1.equalsIgnoreCase("null")) {
+                                        TextView flairTextView1 = new TextView(getApplicationContext());
+                                        flairTextView1.setText(flair1);
+                                        flairTextView1.setTextColor(Color.BLACK);
+                                        flairTextView1.setBackgroundColor(Color.LTGRAY);
+                                        flairTextView1.setTextSize(8);
+                                        postDetails1.addView(flairTextView1);
+                                    }
+
+                                    String up1 = Integer.toString(commentData.optInt("ups"));
+                                    String down1 = Integer.toString(commentData.optInt("downs"));
+                                    TextView upTextView1 = new TextView(getApplicationContext());
+                                    TextView downTextView1 = new TextView(getApplicationContext());
+                                    LinearLayout scoreLayout1 = new LinearLayout(getApplicationContext());
+                                    scoreLayout1.setOrientation(LinearLayout.HORIZONTAL);
+                                    upTextView1.setText(up);
+                                    downTextView1.setText(down);
+                                    upTextView1.setTextSize(8);
+                                    downTextView1.setTextSize(8);
+                                    upTextView1.setTextColor(Color.DKGRAY);
+                                    downTextView1.setTextColor(Color.DKGRAY);
+                                    upTextView1.setGravity(Gravity.CENTER);
+                                    downTextView1.setGravity(Gravity.CENTER);
+                                    upTextView1.setBackgroundColor(Color.parseColor("#FF9900"));
+                                    downTextView1.setBackgroundColor(Color.parseColor("#0099FF"));
+                                    int width1 = (int) (20 * scale + 0.5f);
+                                    upTextView1.setWidth(width);
+                                    downTextView1.setWidth(width);
+                                    scoreLayout1.addView(upTextView1);
+                                    scoreLayout1.addView(downTextView1);
+
+
+                                    View view1 = new View(getApplicationContext());
+                                    ViewGroup.LayoutParams layoutParams1 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 3);
+                                    view1.setLayoutParams(layoutParams1);
+                                    view1.setBackgroundColor(Color.RED);
+                                    view1.setPadding(0, 0, 0, 10);
+
+                                    LinearLayout commentLayout1 = new LinearLayout(getApplicationContext());
+                                    commentLayout1.setOrientation(LinearLayout.VERTICAL);
+                                    commentLayout1.setPadding(25, 0, 0, 15);
+                                    commentLayout1.setBackgroundResource(R.drawable.comments_thread_background);
+                                    commentLayout1.addView(textView1);
+                                    commentLayout1.addView(scoreLayout1);
+                                    commentLayout1.addView(postDetails1);
+                                    commentLayout1.addView(view1);
+
+                                    layout.addView(commentLayout1);
+
                                 }
 
                                 commentsArea.addView(layout);
@@ -103,6 +223,8 @@ public class selfPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.self_post);
 
+        scale = getResources().getDisplayMetrics().density;
+
         TextView titleTextView = (TextView) findViewById(R.id.post_title);
         TextView contentTextView = (TextView) findViewById(R.id.post_content);
         TextView userTextView = (TextView) findViewById(R.id.user);
@@ -122,7 +244,7 @@ public class selfPost extends AppCompatActivity {
             String ups = Integer.toString(getIntent().getIntExtra("ups", 0));
             String downs = Integer.toString(getIntent().getIntExtra("downs", 0));
             postURL = getIntent().getStringExtra("url");
-            postURL = postURL + "about.json";
+            postURL = postURL + "comments.json";
             titleTextView.setText(title);
             contentTextView.setText(content);
             userTextView.setText("Posted by: " + user);
