@@ -2,11 +2,15 @@ package com.example.joshpotterton.rgunners;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.LruCache;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private int requests = 2;
     private String hotJSON = "";
     private String newJSON = "";
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +158,5 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
 
     }
-
 
 }
