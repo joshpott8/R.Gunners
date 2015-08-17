@@ -5,10 +5,13 @@ import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -223,6 +226,7 @@ public class selfPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.self_post);
 
+
         scale = getResources().getDisplayMetrics().density;
 
         TextView titleTextView = (TextView) findViewById(R.id.post_title);
@@ -332,5 +336,20 @@ public class selfPost extends AppCompatActivity {
             }
 
         }
+    }
+
+    //@Override
+    //public boolean onCreateOptionsMenu(Menu menu) {
+        //return super.onCreateOptionsMenu(menu);
+    //}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+       switch(item.getItemId()){
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
