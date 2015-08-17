@@ -1,6 +1,7 @@
 package com.example.joshpotterton.rgunners;
 
 
+import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,16 +54,37 @@ public class selfPost extends AppCompatActivity {
                                 JSONObject commentData = comment.optJSONObject("data");
                                 String str = null;
 
+                                //Comment
                                 str = commentData.getString("body_html");
+                                LinearLayout commentLayout = new LinearLayout(getApplicationContext());
                                 TextView textView = new TextView(getApplicationContext());
-                                textView.setText(Html.fromHtml(Html.fromHtml(str).toString()));
+                                textView.setText(Html.fromHtml(Html.fromHtml(str).toString()).toString().trim());
                                 textView.setTextColor(Color.BLACK);
-                                textView.setPadding(0, 15, 0, 5);
+                                textView.setPadding(0, 0, 0, 0);
+                                commentLayout.setOrientation(LinearLayout.VERTICAL);
+
+                                //Author
+                                String author = commentData.getString("author");
+                                TextView authorTV = new TextView(getApplicationContext());
+                                authorTV.setTextColor(Color.DKGRAY);
+                                authorTV.setText("Posted by: " + author);
+                                authorTV.setTextSize(8);
+
+                                //Divider
+                                View view = new View(getApplicationContext());
+                                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 3);
+                                view.setLayoutParams(layoutParams);
+                                view.setBackgroundColor(Color.RED);
+                                view.setPadding(0,0,0,10);
+
+                                commentLayout.addView(textView);
+                                commentLayout.addView(authorTV);
+                                commentLayout.addView(view);
 
                                 LinearLayout layout = new LinearLayout(getApplicationContext());
-                                layout.setPadding(0,5,0,5);
+                                layout.setPadding(0, 5, 0, 10);
                                 layout.setOrientation(LinearLayout.VERTICAL);
-                                layout.addView(textView);
+                                layout.addView(commentLayout);
 
                                 JSONObject replies = commentData.getJSONObject("replies");
                                 JSONObject repliesData = replies.optJSONObject("data");
@@ -73,11 +96,32 @@ public class selfPost extends AppCompatActivity {
                                     JSONObject obData = ob1.optJSONObject("data");
                                     String str1 = obData.getString("body_html");
                                     TextView textView1 = new TextView(getApplicationContext());
-                                    textView1.setText(Html.fromHtml(Html.fromHtml(str1).toString()));
+                                    textView1.setText(Html.fromHtml(Html.fromHtml(str1).toString()).toString().trim());
                                     textView1.setTextColor(Color.BLACK);
-                                    textView1.setPadding(25, 5, 0, 5);
-                                    textView1.setBackgroundResource(R.drawable.comments_thread_background);
-                                    layout.addView(textView1);
+                                    textView1.setPadding(0,0,0,0);
+
+
+                                    String author1 = obData.getString("author");
+                                    TextView authorTV1 = new TextView(getApplicationContext());
+                                    authorTV1.setTextColor(Color.DKGRAY);
+                                    authorTV1.setText("Posted by: " + author1);
+                                    authorTV1.setTextSize(8);
+
+                                    View view1 = new View(getApplicationContext());
+                                    ViewGroup.LayoutParams layoutParams1 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 3);
+                                    view1.setLayoutParams(layoutParams);
+                                    view1.setBackgroundColor(Color.RED);
+                                    view1.setPadding(0, 0, 0, 10);
+
+                                    LinearLayout commentLayout1 = new LinearLayout(getApplicationContext());
+                                    commentLayout1.setOrientation(LinearLayout.VERTICAL);
+                                    commentLayout1.setPadding(25, 0, 0, 15);
+                                    commentLayout1.setBackgroundResource(R.drawable.comments_thread_background);
+                                    commentLayout1.addView(textView1);
+                                    commentLayout1.addView(authorTV1);
+                                    commentLayout1.addView(view1);
+
+                                    layout.addView(commentLayout1);
                                 }
 
                                 commentsArea.addView(layout);
