@@ -1,5 +1,6 @@
 package com.example.joshpotterton.rgunners;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
                     //Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
                     hotJSON = response;
                     requests = requests -1;
+                    FileOutputStream outputStream;
+                    try {
+                        outputStream = openFileOutput("hotJSON", Context.MODE_PRIVATE);
+                        outputStream.write(response.getBytes());
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -52,7 +69,23 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                try {
+                    FileInputStream inputStream = openFileInput("hotJSON");
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String str;
+
+                    while((str = bufferedReader.readLine()) != null){
+                        hotJSON = hotJSON + str;
+                    }
+                    requests--;
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -62,6 +95,15 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     newJSON = response;
                     requests = requests -1;
+                    FileOutputStream outputStream;
+                    try {
+                        outputStream = openFileOutput("newJSON", Context.MODE_PRIVATE);
+                        outputStream.write(response.getBytes());
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -70,7 +112,23 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                try {
+                    FileInputStream inputStream = openFileInput("hotJSON");
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String str;
+
+                    while((str = bufferedReader.readLine()) != null){
+                        newJSON = newJSON + str;
+                    }
+                    requests--;
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

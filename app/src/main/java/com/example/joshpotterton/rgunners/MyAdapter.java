@@ -7,13 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.LruCache;
@@ -22,19 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ResourceBundle;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -123,33 +110,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             else{
 
                 imageView = holder.thumb;
-
-                //try {
-                        //RequestQueue queue = Volley.newRequestQueue(activity);
-
-                        //ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
-
-                            //@Override
-                            //public void onResponse(Bitmap response) {
-                                //imageView.setImageBitmap(response);
-                                //try {
-                                    //addBitmapToMemoryCache(data.getString("id"), response);
-                                //} catch (Exception e) {
-                                    //e.printStackTrace();
-                                //}
-                            //}
-                        //}, 0, 0, null, new Response.ErrorListener() {
-
-                            //@Override
-                            //public void onErrorResponse(VolleyError error) {
-                                //Log.v("App Debug", "Image not Loaded");
-                            //}
-                        //});
-                        //queue.add(imageRequest);
-
-                //} catch (Exception e) {
-                    //e.printStackTrace();
-                //}
 
                 RequestQueue queue = Volley.newRequestQueue(activity);
 
