@@ -1,7 +1,9 @@
 package com.example.joshpotterton.rgunners;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -203,6 +205,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private JSONArray array;
         private Activity activity;
         private Context context;
+        private JSONObject data;
 
         public ViewHolder(View itemView, JSONArray jsonArray, Activity act) {
             super(itemView);
@@ -223,7 +226,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             int pos = getLayoutPosition();
             try {
                 JSONObject object = array.optJSONObject(pos);
-                JSONObject data = object.optJSONObject("data");
+                data = object.optJSONObject("data");
 
                 //Log.v("App Debug", object.getString("thumbail") + " Post");
                 if(data.getBoolean("is_self")){
@@ -246,9 +249,55 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     context.startActivity(intent);
                 }
                 else{
-                    Uri uri = Uri.parse(data.getString("url"));
-                    Intent broswerIntent = new Intent(Intent.ACTION_VIEW, uri);
-                    context.startActivity(broswerIntent);
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                    alert.setMessage("Do you wish to view the post or view the comments?")
+                            .setCancelable(true)
+                            .setPositiveButton("Post", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Uri uri = null;
+                                    try {
+                                        uri = Uri.parse(data.getString("url"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Intent broswerIntent = new Intent(Intent.ACTION_VIEW, uri);
+                                    context.startActivity(broswerIntent);
+                                }
+                            })
+                            .setNegativeButton("Comments", new DialogInterface.OnClickListener(){
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+
+                                    try {Intent intent = new Intent(context, selfPost.class);
+                                        String title = data.getString("title");
+                                        String user = data.getString("author");
+                                        String userFlair = data.getString("author_flair_text");
+                                        String postURL = data.getString("url");
+                                        int ups = data.getInt("ups");
+                                        int downs = data.getInt("downs");
+                                        intent.putExtra("title", title);
+                                        intent.putExtra("content", "");
+                                        intent.putExtra("user", user);
+                                        intent.putExtra("userFlair", userFlair);
+                                        intent.putExtra("ups", ups);
+                                        intent.putExtra("downs", downs);
+                                        intent.putExtra("url", postURL);
+                                        context.startActivity(intent);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+
+                    AlertDialog dialog = alert.create();
+                    dialog.show();
+
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -80,6 +80,7 @@ public class MainMenu extends AppCompatActivity {
                     case 1:
                         newFeedMenu frag2 = newFeedMenu.create(childrenN, position);
                         return frag2;
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
