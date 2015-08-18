@@ -5,8 +5,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.LruCache;
@@ -15,13 +19,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -33,7 +50,55 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private ImageView imageView;
     private int looper;
     private LruCache<String, Bitmap> memoryCache;
+    private SwipeRefreshLayout swipeRefresh;
 
+
+    private Thread refreshThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            String url;
+            if(title.equalsIgnoreCase("Hot")){
+                url = "https://www.reddit.com/r/Gunners/hot.json";
+            }
+            else{
+                url = "htttps://www.reddit.com/r/Gunners/new.json";
+            }
+
+            RequestQueue queue = Volley.newRequestQueue(activity);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        String JSON;
+                        JSON = response;
+                        FileOutputStream outputStream;
+                        try {
+                            if(title.equalsIgnoreCase("Hot")) {
+                                outputStream = activity.openFileOutput("hotJSON", Context.MODE_PRIVATE);
+                            }
+                            else{
+                                outputStream = activity.openFileOutput("newJSON", Context.MODE_PRIVATE);
+                            }
+                            outputStream.write(response.getBytes());
+                            outputStream.flush();
+                            outputStream.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(activity, "Cannot refresh", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    });
 
     //public MyAdapter(String title){
         //this.title = title;
@@ -58,8 +123,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item_layout, parent,
                 false);
         ViewHolder vh = new ViewHolder(view, jsonArray, activity);
-
-
+        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefresh);
 
         return vh;
     }
@@ -105,7 +169,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 //holder.thumb.setImageBitmap(bitmap);
             //}
             if(url.equalsIgnoreCase("self") || url.equalsIgnoreCase("default")) {
-                holder.thumb.setImageResource(R.drawable.ab_stacked_solid_gunnersactionbar);
+                //holder.thumb.setImageResource(R.drawable.ab_stacked_solid_gunnersactionbar);
+                BitmapWorkerTask bm = new BitmapWorkerTask(holder.thumb, activity);
+                bm.onPostExecute(bm.doInBackground(R.drawable.cannon));
             }
             else{
 
@@ -129,6 +195,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
                 imageLoader.get(url, ImageLoader.getImageListener(holder.thumb, R.drawable.ab_stacked_solid_gunnersactionbar, R.drawable.ab_stacked_solid_gunnersactionbar));
             }
+
+            swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+
+                @Override
+                public void onRefresh() {
+
+                }
+            });
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -265,6 +339,77 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 
         }
+    }
+
+    private class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+
+        private final WeakReference<ImageView> imageView;
+        private int data;
+        private Activity activity;
+
+        public BitmapWorkerTask(ImageView imageView, Activity act){
+            this.imageView = new WeakReference<ImageView>(imageView);
+            activity = act;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Integer... params) {
+            data = params[0];
+            //Log.v("App Debug", "Working in Background");
+            return decodeSampledBitmapFromResource(activity.getResources(), data, 20, 20);
+        }
+
+        protected void onPostExecute(Bitmap bitmap){
+            if(imageView != null && bitmap != null){
+                final ImageView image = imageView.get();
+                if(image != null){
+                    Log.v("App Debug", "Image set");
+                    image.setImageBitmap(bitmap);
+                }
+            }
+        }
+
+
+    }
+
+    //Code from Google Android Developer webpage
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
+                                                         int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
 
